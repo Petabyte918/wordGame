@@ -1,0 +1,16 @@
+{
+  "name": "game_project",
+  "subdomain": "game_project",
+  "scripts": {
+    "start": "app.js"
+  },
+  "version": "0.1.0-1",
+  "engines": {
+    "node": "1"
+  },
+  "dependencies": {
+    "express": "3.4.8",
+    "socket.io": "0.9.16",
+    "ejs": "0.8.5"
+  }
+}

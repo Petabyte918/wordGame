@@ -1,0 +1,254 @@
+<html>
+<head>
+<title>
+Project
+</title>
+<link rel="stylesheet" type="text/css" href="/css/style.css">
+<style type="text/css">
+@font-face{
+	font-family: 'myfont';
+	src : url('font/circula-medium.otf');
+}
+body{
+	font-family: myfont;
+	font-weight: 200;
+	border: 0;
+	padding: 0;
+}
+#content_main_screen , #content_player , #content_host , #player_start_game{
+	display: none;
+}
+.container{
+	width: 100%;
+	margin: 0 auto;
+
+}
+#host_game , #join_game {
+	width: 100%;
+	height: 50%;
+	
+	float: left;
+	
+}
+
+.btn{
+	text-align: center;
+	
+	position: relative;
+  vertical-align: top;
+  line-height: 300%;
+  
+  padding: 0;
+ 
+  color: white;
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  background: #f1c40f;
+  border: 0;
+  border-bottom: 2px solid #e2b607;
+  cursor: pointer;
+ 
+}
+
+.btn:active {
+  top: 1px;
+  outline: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+#form_name  {
+	width: 70%;
+	height:20%;
+	margin-left: 15%;
+	margin-bottom:2%;
+}
+#form_id{
+	width: 40%;
+	height: 20%;
+	margin-left:30%;
+	margin-bottom: 2%;
+}
+#form_submit{
+	padding: 2%;
+	width: 40%;
+	margin-left: 30%;
+
+}
+
+
+.input {
+	color:#3c3c3c;
+	font-family: Helvetica, Arial, sans-serif;
+  font-weight:500;
+	border-radius: 4%;
+	
+	background-color: #fbfbfb;
+	
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	box-sizing: border-box;
+  border: 3px solid #000;
+  text-align: center;
+  font-size: 100%;
+}
+
+.input:focus{
+	background: #fff;
+	box-shadow: 0;
+	border: 3px solid #3498db;
+	color: #3498db;
+	outline: none;
+ 
+}
+h1{
+	text-align: center;
+	width: 100%;
+	margin-bottom: 5%;
+	float: left;
+}
+#ans_list li {
+	width: 100%;
+	height: 12%;
+	text-align: center;
+	float: left;
+
+}
+
+</style>
+
+</head>
+<body>
+	<div class = "container">
+
+<div id = "content"></div>
+<div id = "content_main_screen"> 
+	<span id = "host_game" onClick  = "game_host()" class = "btn">Host a Game </span>
+	<span id = "join_game" onClick = "game_join()" class = "btn">Join A game</span>
+</div>
+
+<div id = "content_host">
+	<h1 id = "address_bar"><span id = "span_address_bar"></span></h1>
+	<h1 id = "game_id"><span id = "span_game_id"></span></h1>
+
+	
+</div>
+
+<div id = "content_player">
+	<form id = "player_form">
+		<input type = "text" id = "form_name" class = "input">
+		<input type = "text" id = "form_id" class = "input">
+		<input type =  "submit" class = "btn"  id = "form_submit">
+	</form>
+</div>
+
+<div id = "player_start_game">
+
+<ul id = "ans_list">
+</ul>
+</div>
+
+</div>
+<script type="text/javascript" src= "http://code.jquery.com/jquery-latest.min.js"></script>
+<script type="text/javascript" src= "js/textfit.js"></script>
+<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+<script type="text/javascript" src = "index.js"></script>
+
+
+<script type="text/javascript">
+
+
+	var host_game = $('#host_game'),
+		join_game = $('#host_game'),
+		template_main_screen = $('#content_main_screen').html(),
+		template_host_join = $('#content_host').html(),
+		template_player_join = $('#content_player').html(),
+		player_start_game = $('#player_start_game').html(),
+		word;
+		
+
+		io.on('host disconnected' , function(){
+			alert('host disconnected');
+			$('#content').html(template_main_screen);
+			$('#host_game , #join_game').fitText();
+		});
+
+		io.on('player disconnected' , function(){
+			alert('player disconnected');
+			$('#content').html(template_main_screen);
+			$('#host_game , #join_game').fitText();
+		});
+
+		io.on('host_game',function(){
+			$('#content').html(player_start_game);
+			
+		});
+
+		io.on('host_word' , function(data){
+			console.log(data);
+			
+		});
+		io.on('get_word'  , function(data){
+			console.log(data.decoys_array);
+			$.each(data.decoys_array,function(index,value){
+				console.log(value);
+			
+				$('#ans_list').append('<li id  = "' + value +'" value = " ' + value +'" class = "btn"> ' + value + '</li>');
+				$
+				
+		});
+			$('#ans_list li').fitText(3.5);
+
+		});
+
+jQuery(function($){
+
+
+		$('#content').html(template_main_screen);
+		$('#host_game , #join_game').fitText();
+		
+
+});
+
+
+
+function game_host(e){
+	
+	io.emit('host_game',function(data , game_id){
+		if(data){
+			$('#content').html(template_host_join);
+			$("#address_bar").fitText();
+$("#game_id").fitText();
+			$('#span_address_bar').html(window.location.href);
+			$('#span_game_id').html(game_id);		
+		}
+
+	});
+}
+
+function game_join(){
+	$('#content').html(template_player_join);
+	$('#form_submit , #form_id , #form_name').fitText();
+
+	$('#player_form').submit(function(e){
+		e.preventDefault();
+		var name = $('#form_name').val(),
+			id  = $('#form_id').val();
+			if(name === "" || id === "" ){
+				alert('please enter all values');
+			}
+			else
+			{
+				io.emit('player_joined' , {username : name , game_id : id} , function(data){
+					alert(data);
+
+				});
+			}
+		
+	});
+}
+</script>
+</body>
+
+
+</html>
