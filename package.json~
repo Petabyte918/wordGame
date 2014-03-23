@@ -1,0 +1,28 @@
+{
+  "name": "game_project",
+  "subdomain": "game_project",
+  "scripts": {
+    "start": "app.js"
+  },
+  "version": "0.1.0-2",
+  "engines": {
+    "node": "1"
+  },
+  "dependencies": {
+    "express": "3.4.8",
+    "socket.io": "0.9.16",
+    "ejs": "0.8.5"
+  },
+  "description": "a multiplayer nodejs , socket word game",
+  "main": "app.js",
+  "keywords": [
+    "nodejs",
+    "socket.io",
+    "multiplayer",
+    "word",
+    "game"
+  ],
+  "author": "Vipul Sodha",
+  "license": "none",
+  "devDependencies": {}
+}
