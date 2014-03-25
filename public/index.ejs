@@ -15,7 +15,7 @@ body{
 	border: 0;
 	padding: 0;
 }
-#content_main_screen , #content_player , #content_host , #player_start_game{
+#content_main_screen , #content_player , #content_host , #player_start_game , #host_round{
 	display: none;
 }
 .container{
@@ -114,7 +114,43 @@ h1{
 	float: left;
 
 }
-
+#player1{
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 15%;
+	border: 2px solid #000;
+}
+#player2{
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 15%;
+	border: 2px solid #000;
+}
+#player1_name{
+	width: 10%;
+	font-size: 50px;
+	float: left;
+}
+#player2_name{
+	width: 10%;
+	font-size: 50px;
+	float: left;
+}
+#player1_score{
+	width: 5%;
+	font-size: 50px;
+	float: left;
+}
+#player2_score{
+	width: 5%;
+	float: right;
+}
+#show_word{
+	margin: 0 auto;
+	margin-top: 10%;
+}
 </style>
 
 </head>
@@ -149,6 +185,20 @@ h1{
 </div>
 
 </div>
+
+<div id = "host_round">
+	<span id = "player1">
+		<span id = "player1_name"></span>
+		<span id ="player1_score"></span>
+	</span>
+	<span id = "player2">	
+		<span id ="player2_name"></span>
+		<span id = "player2_score"></span>
+</span>
+<span id  ="show_word"></span>
+</div>
+
+
 <script type="text/javascript" src= "http://code.jquery.com/jquery-latest.min.js"></script>
 <script type="text/javascript" src= "js/textfit.js"></script>
 <script type="text/javascript" src="/socket.io/socket.io.js"></script>
@@ -164,6 +214,7 @@ h1{
 		template_host_join = $('#content_host').html(),
 		template_player_join = $('#content_player').html(),
 		player_start_game = $('#player_start_game').html(),
+		template_host_round = $('#host_round').html(),
 		word;
 		
 
@@ -186,7 +237,16 @@ h1{
 
 		io.on('host_word' , function(data){
 			console.log(data);
+			$('#show_word').html(data.host_word);
 			
+			
+		});
+		io.on('start_round' , function(data){
+			console.log(data);
+			$('#content').html(template_host_round);
+			$('#player1_name').html(data.player1);
+			$('#player2_name').html(data.player2);
+			//$('#player2_name , #player1_name').fitText();
 		});
 		io.on('get_word'  , function(data){
 			
@@ -197,8 +257,7 @@ h1{
 			
 				$('#ans_list').append('<li id  = "' + value +'" value = " ' + value +'" class = "btn"> ' + value + '</li>');
 				
-				
-		});
+			});
 
 			$('#ans_list li').fitText(3.5);
 			$('#ans_list li').on('click' , check_ans);

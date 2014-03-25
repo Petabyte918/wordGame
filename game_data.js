@@ -10,14 +10,13 @@ exports.init = function(userio,socket){
 	//when a user hosts a game
 	usersocket.on('host_game' , function(callback){
 		createGame(usersocket);
-		console.log('calling back');
 		callback(true , usersocket.game_id);		
 
 	});
 
 	// when a player joins a  game
 	usersocket.on('player_joined' , function(data , callback){
-		console.log(data.game_id);
+		
 		if (data.game_id in games) {
 			
 			
@@ -30,7 +29,7 @@ exports.init = function(userio,socket){
 				callback('Room Full');
 			}
 			
-			console.log(users);
+			c
 		}
 		else{
 			callback('Game Not Found');
@@ -69,7 +68,7 @@ exports.init = function(userio,socket){
 			
 			
 		}
-		console.log(users);
+		
 	});
 	usersocket.on('wrong_ans' , reduceScore);
 	usersocket.on('correct_ans',increaseScore);
@@ -101,7 +100,7 @@ exports.init = function(userio,socket){
 
 function updateScore(data){
 	games[data.game_id].host_socket.emit('update_score' , {player1_score : game_data[data.game_id].player1_score  , player2_score : game_data[data.game_id].player2_score });
-	console.log(game_data);
+	
 }
 	
 function emptyGame(usersocket){
@@ -155,7 +154,9 @@ startGame(game_id);
 
 function startGame(game_id){
 makeGameData(game_id);
+
 io.sockets.in(game_id).emit('host_game');
+startRound(game_id);
 console.log(game_id + ' : Game Started');
 setTimeout(function(){
 	sendWord(game_id);
@@ -163,6 +164,13 @@ setTimeout(function(){
 
 
 }
+function startRound(game_id){
+	var player1_name = games[game_id].player1.username, 
+	player2_name = games[game_id].player2.username;
+	games[game_id].host_socket.emit('start_round' ,{player1 : player1_name , player2 : player2_name});
+}
+
+
 function makeGameData(game_id){
 	game_data[game_id] = {
 		player1_score :0,
@@ -176,7 +184,6 @@ function sendWord(game_id){
 	round_no = game_data[game_id].round_no;
 	if(round_no <= wordPool.length){
  	var word = getWord(wordPool[round_no-1]);
- 	console.log(word);
  	games[game_id].host_socket.emit('host_word' , word);
  	io.sockets.in(game_id).emit('get_word' , word);
 
