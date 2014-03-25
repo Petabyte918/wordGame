@@ -189,16 +189,25 @@ h1{
 			
 		});
 		io.on('get_word'  , function(data){
-			console.log(data.decoys_array);
+			
+			word = data.correct_word;
+			$('#ans_list').html("");
 			$.each(data.decoys_array,function(index,value){
-				console.log(value);
+				
 			
 				$('#ans_list').append('<li id  = "' + value +'" value = " ' + value +'" class = "btn"> ' + value + '</li>');
-				$
+				
 				
 		});
-			$('#ans_list li').fitText(3.5);
 
+			$('#ans_list li').fitText(3.5);
+			$('#ans_list li').on('click' , check_ans);
+
+
+
+		});
+		io.on('update_score',function(data){
+			console.log(data);
 		});
 
 jQuery(function($){
@@ -210,6 +219,19 @@ jQuery(function($){
 
 });
 
+function check_ans(){
+	if(word == $(this)[0].id){
+		console.log('correct ans');
+		io.emit('correct_ans');
+
+
+	}
+	else
+	{
+		console.log('wrong ans');
+		io.emit('wrong_ans');
+	}
+}
 
 
 function game_host(e){

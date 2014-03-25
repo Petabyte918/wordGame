@@ -38,12 +38,7 @@ exports.init = function(userio,socket){
 
 	});
 
-	usersocket.on('display_games' , function(){
-			console.log(games);
-		});
-	usersocket.on('display_users' , function(){
-			console.log(users);
-		});
+	
 
 
 	//when a user disconnects 
@@ -76,6 +71,38 @@ exports.init = function(userio,socket){
 		}
 		console.log(users);
 	});
+	usersocket.on('wrong_ans' , reduceScore);
+	usersocket.on('correct_ans',increaseScore);
+
+
+	function reduceScore(){
+		if(this.player1){
+			game_data[this.game_id].player1_score -=3;
+		}
+		else
+		{
+			game_data[this.game_id].player2_score -=3;
+		}
+		updateScore(this);
+
+	}
+	function increaseScore(){
+		if(this.player1)
+		{
+			game_data[this.game_id].player1_score +=5;	
+		}
+		else{
+			game_data[this.game_id].player2_score +=5;
+		}
+		updateScore(this);
+		game_data[this.game_id].round_no ++;
+		sendWord(this.game_id);
+	}
+
+function updateScore(data){
+	games[data.game_id].host_socket.emit('update_score' , {player1_score : game_data[data.game_id].player1_score  , player2_score : game_data[data.game_id].player2_score });
+	console.log(game_data);
+}
 	
 function emptyGame(usersocket){
 	game_id = usersocket.game_id;
@@ -108,6 +135,7 @@ if(games[game_id].playercount == 0){
 	usersocket.game_id = game_id;
 	usersocket.player1 = true;
 	usersocket.join(game_id);
+	usersocket.player1 = true;
 }
 else if(games[game_id].playercount == 1) {
 	games[game_id].player2.socket = usersocket;
@@ -116,8 +144,10 @@ else if(games[game_id].playercount == 1) {
 	games[game_id].room_full = true;
 	usersocket.game_id = game_id;
 	usersocket.player2 = true;
-	usersocket.join(game_id);	
+	usersocket.join(game_id);
+	usersocket.player1=false;	
 startGame(game_id);
+
 }
 
 
@@ -135,16 +165,12 @@ setTimeout(function(){
 }
 function makeGameData(game_id){
 	game_data[game_id] = {
-		player1_score :"",
-		player2_score : "",
+		player1_score :0,
+		player2_score : 0,
 		round_no :  1
 	}
 }
-function update_game_data(){
-	game_data[game_id].player1_score = 0;
-	game_data[game_id].player2_score =0;
-	game_data[game_id].round_no = 0;
-}
+
 function sendWord(game_id){
 	
 	round_no = game_data[game_id].round_no;
